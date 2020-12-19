@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,8 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # My apps
-    'user_system',
 ]
 
 MIDDLEWARE = [
@@ -76,10 +76,15 @@ WSGI_APPLICATION = 'DroneNav.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+load_dotenv()
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv("db_name"),
+        'USER': os.getenv("db_user"),
+        'PASSWORD': os.getenv("db_password"),
+        'HOST': os.getenv("db_host"),
+        'PORT': os.getenv("db_port"),
     }
 }
 
