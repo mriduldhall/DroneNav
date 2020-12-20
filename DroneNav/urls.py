@@ -22,5 +22,4 @@ app_name = "DroneNav"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', include('user_system.urls')),
-    path('login/', views.login, name="login"),
 ]

@@ -3,7 +3,19 @@
 {% load static %}
 
 {% block content %}
-    <nav>
-        <img src="../../static/user_system/Pop%20Up%20Next%20Highlight.jpg" alt="Home Page Image" width="100%" height="100%" style="padding-bottom: 5px">
+    <nav class="mx-auto card" style=text-align:center;border:none>
+        <img src="../../static/user_system/Pop%20Up%20Next%20Highlight.jpg" alt="Home Page Image">
+        <div class="card-body">
+            <div style="text-align: center">
+                <h1><b>Booking a Drone Has Never Been Easier</b></h1>
+            </div>
+            <div style="text-align:left;font-size:30px;color:rgb(100,100,100)">
+                <p>Quickly book a drone for all your travel needs, no matter what they are.
+                We feature propeller-based drones that can hook onto modules in a few seconds.
+                Travel anywhere from the comfort of your module and location of your choice.</p>
+            </div>
+                <a class="btn btn-primary btn-lg mr-3" href="{% url 'user_system:register' %}" role="button">Get Started</a>
+                <a class="btn btn-outline-success btn-lg" href="{% url 'user_system:login' %}" role="button">Login</a>
+        </div>
     </nav>
 {% endblock %}

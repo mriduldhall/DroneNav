@@ -12,3 +12,7 @@ def login(request):
 
 def information(request):
     return render(request, 'user_system/information.html')
+
+
+def register(request):
+    return render(request, 'user_system/register.html')
