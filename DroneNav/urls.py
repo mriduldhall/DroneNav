@@ -15,9 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from user_system import views
+
+app_name = "DroneNav"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', include('user_system.urls')),
-    path('login/', include('user_system.urls')),
+    path('login/', views.login, name="login"),
 ]

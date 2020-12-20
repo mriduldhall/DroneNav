@@ -8,3 +8,7 @@ def home_screen(request):
 
 def login(request):
     return render(request, 'user_system/login.html')
+
+
+def information(request):
+    return render(request, 'user_system/information.html')
