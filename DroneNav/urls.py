@@ -22,5 +22,5 @@ app_name = "DroneNav"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', include('user_system.urls')),
-    path('', wrong_home_address)
+    path('', wrong_home_address),
 ]
