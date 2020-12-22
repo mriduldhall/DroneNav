@@ -22,6 +22,10 @@ class RegisterForm(ModelForm):
             ),
         }
 
+    def clean_username(self):
+        username = ((self.cleaned_data['username']).lower()).capitalize()
+        return username
+
 
 class LoginForm(ModelForm):
     class Meta:
@@ -41,3 +45,7 @@ class LoginForm(ModelForm):
                 }
             ),
         }
+
+    def clean_username(self):
+        username = ((self.cleaned_data['username']).lower()).capitalize()
+        return username

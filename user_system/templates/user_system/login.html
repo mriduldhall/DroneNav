@@ -2,7 +2,7 @@
 
 {% block content %}
     {% if login_status == "logged_in" %}
-        <div class="alert alert-success" role="alert">Login Successful!</div>
+        <div class="alert alert-danger" role="alert">Something went wrong if you can see this!</div>
     {% elif login_status == "wrong_credentials" %}
         <div class="alert alert-danger" role="alert">Incorrect Login Credentials</div>
     {% endif %}

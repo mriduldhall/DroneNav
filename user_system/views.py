@@ -1,3 +1,4 @@
+# TODO Add background for login and register
 from django.shortcuts import render
 from django.shortcuts import redirect
 from .forms import RegisterForm, LoginForm
@@ -19,6 +20,8 @@ def login(request):
     if form.is_valid():
         if users.objects.filter(username=form.cleaned_data['username'], password=form.cleaned_data['password']):
             login_status = "logged_in"
+            request.session['username'] = form.cleaned_data['username']
+            return redirect('/dashboard/')
         else:
             login_status = "wrong_credentials"
     form = LoginForm()

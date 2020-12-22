@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', include('user_system.urls')),
     path('', wrong_home_address),
+    path('dashboard/', include('drone_system.urls'))
 ]
