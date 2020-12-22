@@ -1,5 +1,23 @@
 {% extends 'user_system/base.html' %}
 
 {% block content %}
-    <h1>Login(WIP)</h1>
+    {% if login_status == "logged_in" %}
+        <div class="alert alert-success" role="alert">Login Successful!</div>
+    {% elif login_status == "wrong_credentials" %}
+        <div class="alert alert-danger" role="alert">Incorrect Login Credentials</div>
+    {% endif %}
+
+    <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:12%>
+        <form action="/home/login" method="POST">{% csrf_token %}
+            <h3 style="padding-bottom: 10px">Login</h3>
+            <div class="form-group">
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+        </form>
+    <p style="text-align: left">Don't have an account? <a href="{% url 'user_system:register' %}">Register</a></p>
+    </nav>
 {% endblock %}

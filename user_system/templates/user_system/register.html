@@ -1,30 +1,8 @@
 {% extends 'user_system/base.html' %}
 
 {% block content %}
-
-    <!-- <nav class="container-fullwidth" style="background: url('../../static/user_system/Register Background.jpg');padding:0"></nav>
-    <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:14%>
-        <form action="#">
-            <h3>Register</h3>
-            <div class="form-group">
-                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Username">
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </nav> -->
-
-    <!-- <nav class="container-fluid" style="padding: 0">
-        <img src="../../static/user_system/Register%20Background.jpg" alt="Background Image" style="width:100%;position:absolute">
-    </nav> -->
-
-    <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:12%>
-        <form action="." method="POST">{% csrf_token %}
+    <!-- <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:12%>
+        <form action="/home/register" method="POST">{% csrf_token %}
             <h3 style="padding-bottom: 10px">Register</h3>
             <div class="form-group">
                 <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Username" required>
@@ -38,6 +16,26 @@
             <button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
         </form>
         <p style="text-align: left">Already registered? <a href="{% url 'user_system:login' %}">Login</a></p>
+    </nav> -->
+
+    {% if registration_status == "successful" %}
+        <div class="alert alert-success" role="alert">Registration Successful!</div>
+    {% elif registration_status == "exists" %}
+        <div class="alert alert-danger" role="alert">Username is already taken</div>
+    {% endif %}
+
+    <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:12%>
+        <form action="/home/register" method="POST">{% csrf_token %}
+            <h3 style="padding-bottom: 10px">Register</h3>
+            <div class="form-group">
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
+        </form>
+    <p style="text-align: left">Already registered? <a href="{% url 'user_system:login' %}">Login</a></p>
     </nav>
 
 {% endblock %}
