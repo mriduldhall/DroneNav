@@ -1,5 +1,27 @@
 {% extends "drone_system/base.html" %}
 
 {% block content %}
-    <h1>Help(WIP)</h1>
+    <nav class="mx-auto card w-50" style=border:none;padding-top:10px>
+        <img class="card-img-top" src="../../static/drone_system/Help%20Image.jpg" alt="Help Image" style="width: 100%">
+        <div class="shadow p-3 mb-5 bg-white rounded">
+            <div class="card-body">
+                <h3 style="text-align: center">Help</h3>
+                <h5>Dashboard:</h5>
+                <p>Once you login, you are redirected to your dashboard. Each user's dashboard is individual
+                to that user. Here you can see all of your active bookings. You can view, the drone's number,
+                the drone's origin, the drone's destination and the scheduled time of arrival.</p>
+                <h5>Book:</h5>
+                <p>The book menu allows you to book drones for travel. You are presented with a form.
+                Once this form is filled, your drone is booked. In case, a drone is not available you
+                are informed.</p>
+                <h5>Information:</h5>
+                <p>In the information menu, you can view the status of each drone. You can view where
+                a drone currently is and if it already has a job. You can also view it's destination
+                and scheduled time of arrival.</p>
+                <h5>Help:</h5>
+                <p>This is the help menu and takes you here.</p>
+                <p>For any other issues email <a href="mailto:mriduldhall@mayfieldschool.net">Mridul</a>.</p>
+            </div>
+        </div>
+    </nav>
 {% endblock %}
