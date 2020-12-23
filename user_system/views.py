@@ -1,4 +1,3 @@
-# TODO Add background for login and register
 from django.shortcuts import render
 from django.shortcuts import redirect
 from .forms import RegisterForm, LoginForm

@@ -2,6 +2,30 @@
 
 {% block content %}
     <nav class="container-fluid" style="background-image:url('../../static/drone_system/Dashboard Background.png');background-repeat:no-repeat;color:floralwhite;background-size:cover;height:91.3vh;overflow-y:hidden">
-        <h2 style="padding-left:10px;padding-top:5px;padding-bottom:20px">Hello, {{ username }}</h2>
+        <nav style="padding-left: 10px"></nav>
+        <h2 style="padding-top:5px;padding-bottom:20px">Hello, {{ username }}</h2>
+        <h4>Your current bookings:</h4>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Drone no.</th>
+                    <th scope="col">Origin</th>
+                    <th scope="col">Destination</th>
+                    <th scope="col">Expected Arrival</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for drone in drones_data %}
+                    <tr>
+                        <th scope="row" style="color: white">{{ forloop.counter }}</th>
+                        <td style="color: white">{{ drone.0 }}</td>
+                        <td style="color: white">{{ drone.1 }}</td>
+                        <td style="color: white">{{ drone.2 }}</td>
+                        <td style="color: white">{{ drone.3 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </nav>
 {% endblock %}
