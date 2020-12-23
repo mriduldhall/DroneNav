@@ -19,7 +19,6 @@ def login(request):
     login_status = None
     if form.is_valid():
         if users.objects.filter(username=form.cleaned_data['username'], password=form.cleaned_data['password']):
-            login_status = "logged_in"
             request.session['username'] = form.cleaned_data['username']
             return redirect('/dashboard/')
         else:
