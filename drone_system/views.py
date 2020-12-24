@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .drones import get_drones_of_user
+from .drones import get_drones_of_user, get_all_drone_data
 
 
 # Create your views here.
@@ -17,7 +17,11 @@ def book(request):
 
 
 def information(request):
-    return render(request, '../../drone_system/templates/drone_system/information.html')
+    drones_data = get_all_drone_data()
+    context = {
+        "drones_data": drones_data
+    }
+    return render(request, '../../drone_system/templates/drone_system/information.html', context)
 
 
 def help(request):
