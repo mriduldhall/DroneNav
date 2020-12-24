@@ -6,6 +6,9 @@ class locations(models.Model):
     id = models.AutoField(primary_key=True)
     location = models.TextField()
 
+    def __str__(self):
+        return self.location
+
 
 class routes(models.Model):
     id = models.AutoField(primary_key=True)

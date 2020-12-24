@@ -1,5 +1,19 @@
 {% extends "drone_system/base.html" %}
 
 {% block content %}
-    <h1>Book(WIP)</h1>
+    <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:12%>
+        <form action="book" method="POST">{% csrf_token %}
+            <h3 style="padding-bottom: 10px">Book</h3>
+            <div class="form-group">
+                <div>
+                    <label for="Origin">Origin</label>
+                    {{ form.origin }}
+                    <br>
+                    <label for="Destination">Destination</label>
+                    {{ form.destination }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Book</button>
+        </form>
+    </nav>
 {% endblock %}
