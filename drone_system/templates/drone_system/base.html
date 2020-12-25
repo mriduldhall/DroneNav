@@ -24,6 +24,12 @@
                 <a class="nav-item nav-link active" href="{% url 'drone_system:book' %}">Book<span class="sr-only">(current)</span></a>
                 <a class="nav-item nav-link active" href="{% url 'drone_system:information' %}">Information<span class="sr-only">(current)</span></a>
                 <a class="nav-item nav-link active" href="{% url 'drone_system:help' %}">Help<span class="sr-only">(current)</span></a>
+                <div class="nav-item active dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'drone_system:logout' %}">Logout</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.shortcuts import redirect
 from .forms import BookForm
 from .drones import get_drones_of_user, get_all_drone_data, find_available_drone, assign_booking
 
@@ -40,3 +41,8 @@ def information(request):
 
 def help(request):
     return render(request, '../../drone_system/templates/drone_system/help.html')
+
+
+def logout(request):
+    del request.session['username']
+    return redirect('/home/')
