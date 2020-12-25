@@ -48,7 +48,7 @@ def find_available_drone(origin):
     origin_id = (location_data[0]).id
     available_drones = drones.objects.filter(location_id=origin_id, job=False)
     if not available_drones:
-        return None
+        return "None"
     else:
         drone = available_drones[0]
         return drone

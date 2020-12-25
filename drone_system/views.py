@@ -20,7 +20,10 @@ def book(request):
     if form.is_valid():
         if form.cleaned_data['origin'] != form.cleaned_data['destination']:
             drone = find_available_drone(form.cleaned_data['origin'])
-            book_status = assign_booking(drone, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
+            if drone:
+                book_status = assign_booking(drone, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
+            else:
+                book_status = "None"
         else:
             book_status = "Same"
         form = BookForm()
