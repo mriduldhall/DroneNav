@@ -25,7 +25,7 @@ class drones(models.Model):
     route = models.ForeignKey('routes', models.PROTECT, null=True)
     job_start_time = models.TimeField(null=True)
     job_duration = models.PositiveIntegerField(null=True)
-    job_finish_time = models.TimeField(null=True)
+    job_finish_time = models.DateTimeField(null=True)
     origin = models.ForeignKey('locations', models.PROTECT, null=True, related_name='destination_id')
     destination = models.ForeignKey('locations', models.PROTECT, null=True, related_name='origin_id')
 

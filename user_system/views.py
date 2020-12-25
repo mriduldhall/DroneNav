@@ -31,14 +31,6 @@ def login(request):
 
 
 def register(request):
-    # form = RegisterForm()
-    # if (request.method == "post") or (request.method == "POST"):
-    #     form = RegisterForm(request.POST)
-    #     if form.is_valid():
-    #         users.objects.create(**form.cleaned_data)
-    # context = {"form": form}
-    # return render(request, 'user_system/register.html', context)
-
     form = RegisterForm(request.POST or None)
     registration = None
     if form.is_valid():

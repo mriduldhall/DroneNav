@@ -1,6 +1,12 @@
 {% extends "drone_system/base.html" %}
 
 {% block content %}
+    {% if book_status == "Booked" %}
+        <div class="alert alert-success" role="alert">Successfully booked drone</div>
+    {% elif book_status == "Same" %}
+        <div class="alert alert-danger" role="alert">Origin and Destination cannot be the same</div>
+    {% endif %}
+
     <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:12%>
         <form action="book" method="POST">{% csrf_token %}
             <h3 style="padding-bottom: 10px">Book</h3>
