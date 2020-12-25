@@ -10,4 +10,5 @@ urlpatterns = [
     path('information', views.information, name="information"),
     path('help', views.help, name="help"),
     path('logout', views.logout, name="logout"),
+    path('settings', views.settings, name="settings"),
 ]

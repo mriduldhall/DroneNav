@@ -43,6 +43,10 @@ def help(request):
     return render(request, '../../drone_system/templates/drone_system/help.html')
 
 
+def settings(request):
+    return render(request, '../../drone_system/templates/drone_system/settings.html')
+
+
 def logout(request):
     del request.session['username']
     return redirect('/home/')
