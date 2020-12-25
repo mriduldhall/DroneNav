@@ -1,3 +1,4 @@
+from django.utils import timezone
 from datetime import datetime, timedelta
 from random import randint
 
@@ -66,7 +67,7 @@ def assign_booking(drone, origin, destination, username):
     else:
         route_data = routes.objects.filter(city_a_id=destination_id, city_b_id=origin_id)
     route_id = (route_data[0]).id
-    job_start_time = datetime.now()
+    job_start_time = datetime.now(tz=timezone.utc)
     job_duration = _calculate_job_duration((route_data[0]).distance)
     job_finish_time = job_start_time + timedelta(minutes=job_duration)
     assert origin_id == drone.location_id
