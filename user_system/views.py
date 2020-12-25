@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from .forms import RegisterForm, LoginForm
 from .models import users
-from drone_system.exception import EnvVariableError
 
 
 # Create your views here.
