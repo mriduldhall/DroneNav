@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from .forms import RegisterForm, LoginForm
 from .models import users
+from drone_system.exception import EnvVariableError
 
 
 # Create your views here.
@@ -14,20 +15,24 @@ def information(request):
 
 
 def login(request):
-    form = LoginForm(request.POST or None)
-    login_status = None
-    if form.is_valid():
-        if users.objects.filter(username=form.cleaned_data['username'], password=form.cleaned_data['password']):
-            request.session['username'] = form.cleaned_data['username']
+    try:
+        if request.session['username']:
             return redirect('/dashboard/')
-        else:
-            login_status = "wrong_credentials"
-    form = LoginForm()
-    context = {
-        "form": form,
-        "login_status": login_status,
-    }
-    return render(request, 'user_system/login.html', context)
+    except KeyError:
+        form = LoginForm(request.POST or None)
+        login_status = None
+        if form.is_valid():
+            if users.objects.filter(username=form.cleaned_data['username'], password=form.cleaned_data['password']):
+                request.session['username'] = form.cleaned_data['username']
+                return redirect('/dashboard/')
+            else:
+                login_status = "wrong_credentials"
+        form = LoginForm()
+        context = {
+            "form": form,
+            "login_status": login_status,
+        }
+        return render(request, 'user_system/login.html', context)
 
 
 def register(request):
