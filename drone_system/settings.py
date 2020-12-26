@@ -14,3 +14,9 @@ def change_password(username, password):
     user = user[0]
     user.password = password
     user.save()
+
+
+def delete_account(username):
+    user = users.objects.filter(username=username)
+    user = user[0]
+    user.delete()

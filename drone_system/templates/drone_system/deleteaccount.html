@@ -1,0 +1,17 @@
+{% extends 'drone_system/settings.html' %}
+
+{% block settings %}
+    {% if status == "Wrong" %}
+        <div class="alert alert-danger" role="alert">Incorrect Password</div>
+    {% endif %}
+
+    <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:6%>
+        <form action="/dashboard/deleteaccount" method="POST">{% csrf_token %}
+            <h3 style="padding-bottom: 10px">Delete Account</h3>
+            <div class="form-group">
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Delete Account</button>
+        </form>
+    </nav>
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from .forms import BookForm, ChangePassword
-from .settings import validate_password, change_password
+from .forms import BookForm, ChangePassword, DeleteAccount
+from .settings import validate_password, change_password, delete_account
 from .drones import get_drones_of_user, get_all_drone_data, find_available_drone, assign_booking
 
 
@@ -69,6 +69,23 @@ def changepassword(request):
         "status": status
     }
     return render(request, '../../drone_system/templates/drone_system/changepassword.html', context)
+
+
+def deleteaccount(request):
+    form = DeleteAccount(request.POST or None)
+    status = ""
+    if form.is_valid():
+        if validate_password(request.session['username'], form.cleaned_data['password']):
+            delete_account(request.session['username'])
+            return redirect('/dashboard/logout')
+        else:
+            status = "Wrong"
+        form = DeleteAccount()
+    context = {
+        "form": form,
+        "status": status
+    }
+    return render(request, '../../drone_system/templates/drone_system/deleteaccount.html', context)
 
 
 def logout(request):
