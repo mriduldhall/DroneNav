@@ -57,17 +57,16 @@ def changepassword(request):
     if form.is_valid():
         if validate_password(request.session['username'], form.cleaned_data['password']):
             if form.cleaned_data['new_password'] == form.cleaned_data['repeat_password']:
-                print(form.cleaned_data['new_password'])
                 change_password(request.session['username'], form.cleaned_data['new_password'])
                 status = "Changed"
             else:
                 status = "Not same"
         else:
             status = "Wrong"
-        print(status)
         form = ChangePassword()
     context = {
-        "form": form
+        "form": form,
+        "status": status
     }
     return render(request, '../../drone_system/templates/drone_system/changepassword.html', context)
 
