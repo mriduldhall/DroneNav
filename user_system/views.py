@@ -14,10 +14,25 @@ def information(request):
 
 
 def login(request):
-    try:
-        if request.session['username']:
-            return redirect('/dashboard/')
-    except KeyError:
+    # try:
+    #     if request.session['username']:
+    #         return redirect('/dashboard/')
+    # except KeyError:
+    #     form = LoginForm(request.POST or None)
+    #     login_status = None
+    #     if form.is_valid():
+    #         if users.objects.filter(username=form.cleaned_data['username'], password=form.cleaned_data['password']):
+    #             request.session['username'] = form.cleaned_data['username']
+    #             return redirect('/dashboard/')
+    #         else:
+    #             login_status = "wrong_credentials"
+    #     form = LoginForm()
+    #     context = {
+    #         "form": form,
+    #         "login_status": login_status,
+    #     }
+    #     return render(request, 'user_system/login.html', context)
+    if 'username' not in request.session:
         form = LoginForm(request.POST or None)
         login_status = None
         if form.is_valid():
@@ -32,6 +47,8 @@ def login(request):
             "login_status": login_status,
         }
         return render(request, 'user_system/login.html', context)
+    else:
+        return redirect('/dashboard/')
 
 
 def register(request):
