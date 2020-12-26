@@ -1,5 +1,16 @@
 {% extends 'drone_system/base.html' %}
 
 {% block content %}
-    <h1>Settings(WIP)</h1>
+    <div class="card-group">
+        <div class="card">
+            <div class="card-body text-center">
+                <a class="btn btn-outline-primary btn-lg" href="{% url 'drone_system:changepassword' %}" role="button">Change Password</a>
+                <a class="btn btn-outline-primary btn-lg" href="#" role="button">Delete Account</a>
+            </div>
+        </div>
+    </div>
+
+    {% block settings %}
+
+    {% endblock %}
 {% endblock %}

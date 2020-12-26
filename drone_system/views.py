@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from .forms import BookForm
+from .forms import BookForm, ChangePassword
+from .settings import validate_password, change_password
 from .drones import get_drones_of_user, get_all_drone_data, find_available_drone, assign_booking
 
 
@@ -48,6 +49,27 @@ def help(request):
 
 def settings(request):
     return render(request, '../../drone_system/templates/drone_system/settings.html')
+
+
+def changepassword(request):
+    form = ChangePassword(request.POST or None)
+    status = ""
+    if form.is_valid():
+        if validate_password(request.session['username'], form.cleaned_data['password']):
+            if form.cleaned_data['new_password'] == form.cleaned_data['repeat_password']:
+                print(form.cleaned_data['new_password'])
+                change_password(request.session['username'], form.cleaned_data['new_password'])
+                status = "Changed"
+            else:
+                status = "Not same"
+        else:
+            status = "Wrong"
+        print(status)
+        form = ChangePassword()
+    context = {
+        "form": form
+    }
+    return render(request, '../../drone_system/templates/drone_system/changepassword.html', context)
 
 
 def logout(request):

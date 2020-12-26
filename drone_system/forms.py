@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ModelForm
+from user_system.models import users
 from .models import drones
 
 
@@ -18,4 +19,38 @@ class BookForm(ModelForm):
                     'class': 'custom-select my-1 mr-sm-2',
                 },
             )
+        }
+
+    def save(self, commit=True):
+        return super(BookForm, self).save(commit=commit)
+
+
+class ChangePassword(ModelForm):
+    new_password = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'New Password'}))
+    repeat_password = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Repeat Password'}))
+
+    class Meta:
+        model = users
+        fields = ['password']
+        widgets = {
+            'password': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Current Password',
+                }
+            ),
+        }
+
+
+class DeleteAccount(ModelForm):
+    class Meta:
+        model = users
+        fields = ['password']
+        widgets = {
+            'password': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Password',
+                }
+            ),
         }

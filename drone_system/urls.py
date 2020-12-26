@@ -11,4 +11,5 @@ urlpatterns = [
     path('help', views.help, name="help"),
     path('logout', views.logout, name="logout"),
     path('settings', views.settings, name="settings"),
+    path('changepassword', views.changepassword, name="changepassword")
 ]
