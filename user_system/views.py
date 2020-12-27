@@ -39,7 +39,8 @@ def register(request):
     if form.is_valid():
         if not users.objects.filter(username=form.cleaned_data['username']):
             form.save()
-            registration = "successful"
+            request.session['username'] = form.cleaned_data['username']
+            return redirect('/dashboard/')
         else:
             registration = "exists"
         form = RegisterForm()
