@@ -1,23 +1,6 @@
 {% extends 'user_system/base.html' %}
 
 {% block content %}
-    <!-- <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:12%>
-        <form action="/home/register" method="POST">{% csrf_token %}
-            <h3 style="padding-bottom: 10px">Register</h3>
-            <div class="form-group">
-                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Username" required>
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" required>
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Repeat Password" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
-        </form>
-        <p style="text-align: left">Already registered? <a href="{% url 'user_system:login' %}">Login</a></p>
-    </nav> -->
-
     {% if registration_status == "successful" %}
         <div class="alert alert-success" role="alert">Registration Successful!</div>
     {% elif registration_status == "exists" %}

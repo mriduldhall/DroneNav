@@ -23,7 +23,9 @@ def book(request):
         if form.cleaned_data['origin'] != form.cleaned_data['destination']:
             drone = find_available_drone(form.cleaned_data['origin'])
             if drone:
-                book_status = assign_booking(drone, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
+                assign_booking(drone, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
+                book_status = "Booked"
+                form = BookForm()
             else:
                 drone = find_earliest_drone(form.cleaned_data['origin'])
                 if drone:
@@ -31,9 +33,9 @@ def book(request):
                     book_status = "Later"
                 else:
                     book_status = "None"
+                form = BookForm()
         else:
             book_status = "Same"
-        form = BookForm()
     context = {
         "form": form,
         "book_status": book_status,

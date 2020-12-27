@@ -72,7 +72,6 @@ def assign_booking(drone, origin, destination, username):
     job_finish_time = job_start_time + timedelta(minutes=job_duration)
     assert origin_id == drone.location_id
     _save_data(drone, user_id, route_id, job_start_time, job_duration, job_finish_time, origin_id, destination_id)
-    return "Booked"
 
 
 def _calculate_job_duration(distance):
