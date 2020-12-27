@@ -7,6 +7,8 @@
         <div class="alert alert-danger" role="alert">Origin and Destination cannot be the same</div>
     {% elif book_status == "None" %}
         <div class="alert alert-danger" role="alert">No drone available currently. Please try again later.</div>
+    {% elif book_status == "Later" %}
+        <div class="alert alert-warning" role="alert">No drone available currently. However, we have a drone scheduled to arrive at {{ earliest }}</div>
     {% endif %}
 
     <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:12%>

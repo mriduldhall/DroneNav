@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from .forms import BookForm, ChangePassword, DeleteAccount
 from .settings import validate_password, change_password, delete_account
-from .drones import get_drones_of_user, get_all_drone_data, find_available_drone, assign_booking
+from .drones import get_drones_of_user, get_all_drone_data, find_available_drone, assign_booking, find_earliest_drone
 
 
 # Create your views here.
@@ -18,19 +18,26 @@ def dashboard(request):
 def book(request):
     form = BookForm(request.POST or None)
     book_status = ""
+    earliest = ""
     if form.is_valid():
         if form.cleaned_data['origin'] != form.cleaned_data['destination']:
             drone = find_available_drone(form.cleaned_data['origin'])
             if drone:
                 book_status = assign_booking(drone, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
             else:
-                book_status = "None"
+                drone = find_earliest_drone(form.cleaned_data['origin'])
+                if drone:
+                    earliest = drone.job_finish_time
+                    book_status = "Later"
+                else:
+                    book_status = "None"
         else:
             book_status = "Same"
         form = BookForm()
     context = {
         "form": form,
         "book_status": book_status,
+        "earliest": earliest,
     }
     return render(request, '../../drone_system/templates/drone_system/book.html', context)
 

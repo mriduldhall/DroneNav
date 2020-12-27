@@ -108,3 +108,11 @@ def _save_data(drone, user_id, route_id, job_start_time, job_duration, job_finis
     drone.origin_id = origin_id
     drone.destination_id = destination_id
     drone.save()
+
+
+def find_earliest_drone(origin):
+    location_data = locations.objects.filter(location=origin)
+    origin_id = (location_data[0]).id
+    available_drones = (drones.objects.filter(destination_id=origin_id, job=True)).order_by('job_finish_time')
+    earliest_drone = available_drones[0]
+    return earliest_drone
