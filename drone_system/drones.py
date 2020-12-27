@@ -2,8 +2,8 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from random import randint
 
-from .models import drones, locations, routes, world_data
 from user_system.models import users
+from .models import drones, locations, routes, world_data, future_bookings
 
 
 def get_drones_of_user(username):
@@ -112,6 +112,26 @@ def _save_data(drone, user_id, route_id, job_start_time, job_duration, job_finis
 def find_earliest_drone(origin):
     location_data = locations.objects.filter(location=origin)
     origin_id = (location_data[0]).id
-    available_drones = (drones.objects.filter(destination_id=origin_id, job=True)).order_by('job_finish_time')
+    available_drones = (drones.objects.filter(destination_id=origin_id, job=True, future_booking_id=None)).order_by('job_finish_time')
     earliest_drone = available_drones[0]
     return earliest_drone
+
+
+def create_future_booking(drone_id, origin, destination, username):
+    user_data = users.objects.filter(username=username)
+    user_id = (user_data[0]).id
+    origin_data = locations.objects.filter(location=origin)
+    origin_id = (origin_data[0]).id
+    destination_data = locations.objects.filter(location=destination)
+    destination_id = (destination_data[0]).id
+    if origin_id < destination_id:
+        route_data = routes.objects.filter(city_a_id=origin_id, city_b_id=destination_id)
+    else:
+        route_data = routes.objects.filter(city_a_id=destination_id, city_b_id=origin_id)
+    route_id = (route_data[0]).id
+    drone = (drones.objects.filter(id=drone_id)[0])
+    current_job_finish_time = drone.job_finish_time
+    future_bookings(drone_id=drone_id, user_id=user_id, route_id=route_id, job_start_time=current_job_finish_time, origin_id=origin_id, destination_id=destination_id).save()
+    future_booking_id = (future_bookings.objects.filter(drone_id=drone_id)[0]).id
+    drone.future_booking_id = future_booking_id
+    drone.save()

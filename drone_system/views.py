@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from .forms import BookForm, ChangePassword, DeleteAccount
 from .settings import validate_password, change_password, delete_account
-from .drones import get_drones_of_user, get_all_drone_data, find_available_drone, assign_booking, find_earliest_drone
+from .drones import get_drones_of_user, get_all_drone_data, find_available_drone, assign_booking, find_earliest_drone, create_future_booking
 
 
 # Create your views here.
@@ -16,30 +16,70 @@ def dashboard(request):
 
 
 def book(request):
-    form = BookForm(request.POST or None)
+    # form = BookForm(request.POST or None)
+    # book_status = ""
+    # time = ""
+    # if form.is_valid():
+    #     if form.cleaned_data['origin'] != form.cleaned_data['destination']:
+    #         drone = find_available_drone(form.cleaned_data['origin'])
+    #         if drone:
+    #             assign_booking(drone, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
+    #             book_status = "Booked"
+    #             form = BookForm()
+    #         else:
+    #             drone = find_earliest_drone(form.cleaned_data['origin'])
+    #             if drone:
+    #                 time = drone.job_finish_time
+    #                 book_status = "Later"
+    #             else:
+    #                 book_status = "None"
+    #                 form = BookForm()
+    #     else:
+    #         book_status = "Same"
+    # context = {
+    #     "form": form,
+    #     "book_status": book_status,
+    #     "time": time,
+    # }
+    # return render(request, '../../drone_system/templates/drone_system/book.html', context)
+
     book_status = ""
-    earliest = ""
-    if form.is_valid():
-        if form.cleaned_data['origin'] != form.cleaned_data['destination']:
-            drone = find_available_drone(form.cleaned_data['origin'])
-            if drone:
-                assign_booking(drone, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
+    time = ""
+    if request.method == "POST":
+        form = BookForm(request.POST)
+        if form.is_valid():
+            if request.POST.get("Book"):
+                if form.cleaned_data['origin'] != form.cleaned_data['destination']:
+                    drone = find_available_drone(form.cleaned_data['origin'])
+                    if drone:
+                        assign_booking(drone, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
+                        book_status = "Booked"
+                        form = BookForm()
+                    else:
+                        drone = find_earliest_drone(form.cleaned_data['origin'])
+                        if drone:
+                            time = drone.job_finish_time
+                            request.session['drone_id'] = drone.id
+                            book_status = "Later"
+                        else:
+                            book_status = "None"
+                            form = BookForm()
+                else:
+                    book_status = "Same"
+            elif request.POST.get("Yes"):
+                create_future_booking(request.session['drone_id'], form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
                 book_status = "Booked"
                 form = BookForm()
-            else:
-                drone = find_earliest_drone(form.cleaned_data['origin'])
-                if drone:
-                    earliest = drone.job_finish_time
-                    book_status = "Later"
-                else:
-                    book_status = "None"
+                del request.session['drone_id']
+            elif request.POST.get("No"):
+                del request.session['drone_id']
                 form = BookForm()
-        else:
-            book_status = "Same"
+    else:
+        form = BookForm()
     context = {
         "form": form,
         "book_status": book_status,
-        "earliest": earliest,
+        "time": time,
     }
     return render(request, '../../drone_system/templates/drone_system/book.html', context)
 

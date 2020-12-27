@@ -28,6 +28,7 @@ class drones(models.Model):
     job_finish_time = models.DateTimeField(null=True)
     origin = models.ForeignKey('locations', models.PROTECT, null=True, related_name='destination_id')
     destination = models.ForeignKey('locations', models.PROTECT, null=True, related_name='origin_id')
+    future_booking = models.ForeignKey('future_bookings', models.SET_NULL, null=True)
 
 
 class future_bookings(models.Model):

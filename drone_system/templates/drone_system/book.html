@@ -8,11 +8,17 @@
     {% elif book_status == "None" %}
         <div class="alert alert-danger" role="alert">No drone available currently. Please try again later.</div>
     {% elif book_status == "Later" %}
-        <div class="alert alert-warning" role="alert">No drone available currently. However, we have a drone scheduled to arrive at {{ earliest }}</div>
+        <div class="alert alert-warning" role="alert">No drone available currently. However, we have a drone scheduled to arrive at {{ time }}
+            Would you like to book that drone?
+            <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                <button type="submit" name="Yes" value="No" form="Book-form" class="btn btn-warning btn-lg">Yes</button>
+                <button type="submit" name="No" value="No" form="Book-form" class="btn btn-warning btn-lg">No</button>
+            </div>
+        </div>
     {% endif %}
 
     <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:12%>
-        <form action="book" method="POST">{% csrf_token %}
+        <form action="book" method="POST" id="Book-form">{% csrf_token %}
             <h3 style="padding-bottom: 10px">Book</h3>
             <div class="form-group">
                 <div>
@@ -23,7 +29,7 @@
                     {{ form.destination }}
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Book</button>
+            <button type="submit" name="Book" value="Book" class="btn btn-primary btn-lg btn-block">Book</button>
         </form>
     </nav>
 {% endblock %}
