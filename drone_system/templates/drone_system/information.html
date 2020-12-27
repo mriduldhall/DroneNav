@@ -5,30 +5,32 @@
 {% block content %}
     <nav class="container-fluid" style="background-image:url('../../static/drone_system/Dashboard Background.png');background-repeat:no-repeat;color:floralwhite;background-size:cover;height:100%;min-height:91.35vh">
         <nav style="padding-top: 15px">
-            <table class="table">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Drone No.</th>
-                        <th scope="col">Job status</th>
-                        <th scope="col">Origin</th>
-                        <th scope="col">Destination</th>
-                        <th scope="col">Estimated Arrival Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for drone in drones_data %}
+            <nav class="table-responsive">
+                <table class="table">
+                    <thead class="thead-dark">
                         <tr>
-                            <th scope="row" style="color: white">{{ forloop.counter }}</th>
-                            <td style="color: white">{{ drone.0 }}</td>
-                            <td style="color: white">{{ drone.1 }}</td>
-                            <td style="color: white">{{ drone.2 }}</td>
-                            <td style="color: white">{{ drone.3 }}</td>
-                            <td style="color: white">{{ drone.4 }}</td>
+                            <th scope="col">#</th>
+                            <th scope="col">Drone No.</th>
+                            <th scope="col">Job status</th>
+                            <th scope="col">Origin</th>
+                            <th scope="col">Destination</th>
+                            <th scope="col">Estimated Arrival Time</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for drone in drones_data %}
+                            <tr>
+                                <th scope="row" style="color: white">{{ forloop.counter }}</th>
+                                <td style="color: white">{{ drone.0 }}</td>
+                                <td style="color: white">{{ drone.1 }}</td>
+                                <td style="color: white">{{ drone.2 }}</td>
+                                <td style="color: white">{{ drone.3 }}</td>
+                                <td style="color: white">{{ drone.4 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </nav>
         </nav>
     </nav>
 {% endblock %}
