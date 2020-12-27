@@ -24,7 +24,7 @@ if __name__ == '__main__':
             destination = random.choice(locations_list)
             if origin != destination:
                 drone = find_available_drone(origin)
-                print("Assigning Job to", (drone[0]))
+                print("Assigning Job to", drone)
                 if drone:
                     assign_booking(drone, origin, destination, "Emulator")
         time.sleep(360)
