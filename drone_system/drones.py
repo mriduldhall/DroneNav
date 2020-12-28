@@ -47,7 +47,7 @@ def get_all_drone_data():
 def find_available_drone(origin):
     location_data = locations.objects.filter(location=origin)
     origin_id = (location_data[0]).id
-    available_drones = drones.objects.filter(location_id=origin_id, job=False)
+    available_drones = drones.objects.filter(location_id=origin_id, job=False, future_booking_id=None)
     if not available_drones:
         return None
     else:
@@ -113,8 +113,11 @@ def find_earliest_drone(origin):
     location_data = locations.objects.filter(location=origin)
     origin_id = (location_data[0]).id
     available_drones = (drones.objects.filter(destination_id=origin_id, job=True, future_booking_id=None)).order_by('job_finish_time')
-    earliest_drone = available_drones[0]
-    return earliest_drone
+    if not available_drones:
+        return None
+    else:
+        earliest_drone = available_drones[0]
+        return earliest_drone
 
 
 def create_future_booking(drone_id, origin, destination, username):
@@ -131,7 +134,8 @@ def create_future_booking(drone_id, origin, destination, username):
     route_id = (route_data[0]).id
     drone = (drones.objects.filter(id=drone_id)[0])
     current_job_finish_time = drone.job_finish_time
-    future_bookings(drone_id=drone_id, user_id=user_id, route_id=route_id, job_start_time=current_job_finish_time, origin_id=origin_id, destination_id=destination_id).save()
-    future_booking_id = (future_bookings.objects.filter(drone_id=drone_id)[0]).id
+    future_booking = future_bookings(user_id=user_id, route_id=route_id, job_start_time=current_job_finish_time, origin_id=origin_id, destination_id=destination_id)
+    future_booking.save()
+    future_booking_id = future_booking.pk
     drone.future_booking_id = future_booking_id
     drone.save()

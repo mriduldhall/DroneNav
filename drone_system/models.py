@@ -23,7 +23,7 @@ class drones(models.Model):
     job = models.BooleanField()
     user = models.ForeignKey('user_system.users', models.SET(0), null=True)
     route = models.ForeignKey('routes', models.PROTECT, null=True)
-    job_start_time = models.TimeField(null=True)
+    job_start_time = models.DateTimeField(null=True)
     job_duration = models.PositiveIntegerField(null=True)
     job_finish_time = models.DateTimeField(null=True)
     origin = models.ForeignKey('locations', models.PROTECT, null=True, related_name='destination_id')
@@ -33,10 +33,9 @@ class drones(models.Model):
 
 class future_bookings(models.Model):
     id = models.AutoField(primary_key=True)
-    drone = models.ForeignKey('drones', models.CASCADE)
     user = models.ForeignKey('user_system.users', models.SET(0))
     route = models.ForeignKey('routes', models.PROTECT)
-    job_start_time = models.TimeField()
+    job_start_time = models.DateTimeField()
     job_duration = models.PositiveIntegerField(null=True)
     job_finish_time = models.DateTimeField(null=True)
     origin = models.ForeignKey('locations', models.PROTECT, related_name='destination')
