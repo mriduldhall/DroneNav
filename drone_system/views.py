@@ -16,33 +16,6 @@ def dashboard(request):
 
 
 def book(request):
-    # form = BookForm(request.POST or None)
-    # book_status = ""
-    # time = ""
-    # if form.is_valid():
-    #     if form.cleaned_data['origin'] != form.cleaned_data['destination']:
-    #         drone = find_available_drone(form.cleaned_data['origin'])
-    #         if drone:
-    #             assign_booking(drone, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
-    #             book_status = "Booked"
-    #             form = BookForm()
-    #         else:
-    #             drone = find_earliest_drone(form.cleaned_data['origin'])
-    #             if drone:
-    #                 time = drone.job_finish_time
-    #                 book_status = "Later"
-    #             else:
-    #                 book_status = "None"
-    #                 form = BookForm()
-    #     else:
-    #         book_status = "Same"
-    # context = {
-    #     "form": form,
-    #     "book_status": book_status,
-    #     "time": time,
-    # }
-    # return render(request, '../../drone_system/templates/drone_system/book.html', context)
-
     book_status = ""
     time = ""
     if request.method == "POST":
