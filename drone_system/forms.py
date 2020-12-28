@@ -25,6 +25,29 @@ class BookForm(ModelForm):
         return super(BookForm, self).save(commit=commit)
 
 
+class FutureBook(ModelForm):
+    time = forms.TimeField(widget=forms.TimeInput(attrs={'class': 'form-control', 'placeholder': 'Time(Format: HH:MM in 24 hour notation)'}))
+
+    class Meta:
+        model = drones
+        fields = ['origin', 'destination']
+        widgets = {
+            'origin': forms.Select(
+                attrs={
+                    'class': 'custom-select my-1 mr-sm-2',
+                },
+            ),
+            'destination': forms.Select(
+                attrs={
+                    'class': 'custom-select my-1 mr-sm-2',
+                },
+            )
+        }
+
+    def save(self, commit=True):
+        return super(FutureBook, self).save(commit=commit)
+
+
 class ChangePassword(ModelForm):
     new_password = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'New Password'}))
     repeat_password = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Repeat Password'}))

@@ -120,7 +120,7 @@ def find_earliest_drone(origin):
         return earliest_drone
 
 
-def create_future_booking(drone_id, origin, destination, username):
+def create_future_booking(drone_id, origin, destination, username, job_start_time=""):
     user_data = users.objects.filter(username=username)
     user_id = (user_data[0]).id
     origin_data = locations.objects.filter(location=origin)
@@ -133,9 +133,21 @@ def create_future_booking(drone_id, origin, destination, username):
         route_data = routes.objects.filter(city_a_id=destination_id, city_b_id=origin_id)
     route_id = (route_data[0]).id
     drone = (drones.objects.filter(id=drone_id)[0])
-    current_job_finish_time = drone.job_finish_time
-    future_booking = future_bookings(user_id=user_id, route_id=route_id, job_start_time=current_job_finish_time, origin_id=origin_id, destination_id=destination_id)
+    if job_start_time == "":
+        job_start_time = drone.job_finish_time
+    future_booking = future_bookings(user_id=user_id, route_id=route_id, job_start_time=job_start_time, origin_id=origin_id, destination_id=destination_id)
     future_booking.save()
     future_booking_id = future_booking.pk
     drone.future_booking_id = future_booking_id
     drone.save()
+
+
+def form_time(raw_time):
+    if raw_time >= datetime.time(datetime.now(tz=timezone.utc)):
+        time = datetime.now(tz=timezone.utc)
+        time = time.replace(hour=raw_time.hour, minute=raw_time.minute, second=0, microsecond=0)
+        return time
+    else:
+        time = datetime.now(tz=timezone.utc)
+        time = time.replace(day=time.day + 1, hour=raw_time.hour, minute=raw_time.minute, second=0, microsecond=0)
+        return time

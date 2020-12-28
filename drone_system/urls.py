@@ -13,4 +13,5 @@ urlpatterns = [
     path('settings', views.settings, name="settings"),
     path('changepassword', views.changepassword, name="changepassword"),
     path('deleteaccount', views.deleteaccount, name="deleteaccount"),
+    path('futurebook', views.futurebook, name="futurebook"),
 ]

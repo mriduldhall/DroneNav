@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from .forms import BookForm, ChangePassword, DeleteAccount
+from .forms import BookForm, ChangePassword, DeleteAccount, FutureBook
 from .settings import validate_password, change_password, delete_account
-from .drones import get_drones_of_user, get_all_drone_data, find_available_drone, assign_booking, find_earliest_drone, create_future_booking
+from .drones import get_drones_of_user, get_all_drone_data, find_available_drone, assign_booking, find_earliest_drone, create_future_booking, form_time
 
 
 # Create your views here.
@@ -55,6 +55,45 @@ def book(request):
         "time": time,
     }
     return render(request, '../../drone_system/templates/drone_system/book.html', context)
+
+
+def futurebook(request):
+    time_validation = ""
+    booking = ""
+    if request.method == "POST":
+        print("I am in POST")
+        form = FutureBook(request.POST)
+        if form.is_valid():
+            if form.cleaned_data['origin'] != form.cleaned_data['destination']:
+                time = form_time(form.cleaned_data['time'])
+                time_validation = True
+                drone = find_available_drone(form.cleaned_data['origin'])
+                if drone:
+                    create_future_booking(drone.id, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'], time)
+                    booking = "Success"
+                else:
+                    drone = find_earliest_drone(form.cleaned_data['origin'])
+                    if drone:
+                        if time > drone.job_finish_time:
+                            create_future_booking(drone.id, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'], time)
+                            booking = "Success"
+                        else:
+                            booking = "None"
+                    else:
+                        booking = "None"
+            else:
+                print("Origin and destination is same")
+                booking = "Same"
+        else:
+            time_validation = False
+    else:
+        form = FutureBook()
+    context = {
+        "form": form,
+        "time_validation": time_validation,
+        "booking": booking,
+    }
+    return render(request, '../../drone_system/templates/drone_system/futurebook.html', context)
 
 
 def information(request):

@@ -1,0 +1,31 @@
+{% extends 'drone_system/base.html' %}
+
+{% block content %}
+    {% if booking == "Success" %}
+        <div class="alert alert-success" role="alert">Successfully booked drone</div>
+    {% elif time_validation == False %}
+        <div class="alert alert-danger" role="alert">Time is not valid. Please enter time in the HH:MM format in 24-hour notation.</div>
+    {% elif booking == "Same" %}
+        <div class="alert alert-danger" role="alert">Origin and Destination cannot be the same</div>
+    {% elif booking == "None" %}
+        <div class="alert alert-danger" role="alert">No drone available. Please try again later or choose another time.</div>
+    {% endif %}
+
+    <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:12%>
+        <form action="futurebook" method="POST" id="Future-book-form">{% csrf_token %}
+            <h3 style="padding-bottom: 10px">Book(Future)</h3>
+            <div class="form-group">
+                <div>
+                    <label for="Origin">Origin</label>
+                    {{ form.origin }}
+                    <br>
+                    <label for="Destination">Destination</label>
+                    {{ form.destination }}
+                    <label for="Time">Time</label>
+                    {{ form.time }}
+                </div>
+            </div>
+            <button type="submit" name="Book" value="Book" class="btn btn-primary btn-lg btn-block">Book</button>
+        </form>
+    </nav>
+{% endblock %}
