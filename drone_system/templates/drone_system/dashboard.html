@@ -29,5 +29,30 @@
                 </tbody>
             </table>
         </div>
+        <h4>Your future bookings:</h4>
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Drone no.</th>
+                        <th scope="col">Origin</th>
+                        <th scope="col">Destination</th>
+                        <th scope="col">Expected Departure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in future_booking_data %}
+                        <tr>
+                            <th scope="row" style="color: white">{{ forloop.counter }}</th>
+                            <td style="color: white">{{ booking.0 }}</td>
+                            <td style="color: white">{{ booking.1 }}</td>
+                            <td style="color: white">{{ booking.2 }}</td>
+                            <td style="color: white">{{ booking.3 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </nav>
 {% endblock %}

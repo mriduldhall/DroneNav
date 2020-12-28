@@ -151,3 +151,21 @@ def form_time(raw_time):
         time = datetime.now(tz=timezone.utc)
         time = time.replace(day=time.day + 1, hour=raw_time.hour, minute=raw_time.minute, second=0, microsecond=0)
         return time
+
+
+def get_future_bookings_of_user(username):
+    bookings_data = []
+    try:
+        user = users.objects.filter(username=username)
+        user_id = user[0]
+        future_bookings_of_user = (future_bookings.objects.filter(user_id=user_id)).order_by('id')
+        for booking in future_bookings_of_user:
+            origin_data = locations.objects.filter(id=booking.origin_id)
+            origin = (origin_data[0]).location
+            destination_data = locations.objects.filter(id=booking.destination_id)
+            destination = (destination_data[0]).location
+            drone_data = [booking.id, origin, destination, booking.job_start_time]
+            bookings_data.append(drone_data)
+        return bookings_data
+    except drones.DoesNotExist:
+        return bookings_data

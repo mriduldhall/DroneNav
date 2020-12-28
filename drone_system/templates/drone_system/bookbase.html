@@ -1,0 +1,16 @@
+{% extends 'drone_system/base.html' %}
+
+{% block content %}
+    <div class="card-group">
+        <div class="card">
+            <div class="card-body text-center">
+                <a class="btn btn-outline-primary btn-lg" href="{% url 'drone_system:book' %}" role="button">Book</a>
+                <a class="btn btn-outline-primary btn-lg" href="{% url 'drone_system:futurebook' %}" role="button">Book(Future)</a>
+            </div>
+        </div>
+    </div>
+
+    {% block book %}
+
+    {% endblock %}
+{% endblock %}
