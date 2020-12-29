@@ -164,8 +164,9 @@ def get_future_bookings_of_user(username):
             origin = (origin_data[0]).location
             destination_data = locations.objects.filter(id=booking.destination_id)
             destination = (destination_data[0]).location
-            drone_data = [booking.id, origin, destination, booking.job_start_time]
-            bookings_data.append(drone_data)
+            drone = (drones.objects.filter(future_booking_id=booking.id))[0]
+            booking_data = [drone.id, origin, destination, booking.job_start_time]
+            bookings_data.append(booking_data)
         return bookings_data
     except drones.DoesNotExist:
         return bookings_data
