@@ -5,9 +5,16 @@ from django.db import models
 class locations(models.Model):
     id = models.AutoField(primary_key=True)
     location = models.TextField()
+    city = models.ForeignKey('cities', models.PROTECT)
+    intercity = models.BooleanField()
 
     def __str__(self):
-        return self.location
+        return self.location + ", " + (cities.objects.filter(id=self.city_id)[0]).city
+
+
+class cities(models.Model):
+    id = models.AutoField(primary_key=True)
+    city = models.TextField()
 
 
 class routes(models.Model):

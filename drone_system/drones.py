@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from random import randint
 
 from user_system.models import users
-from .models import drones, locations, routes, world_data, future_bookings
+from .models import drones, locations, cities, routes, world_data, future_bookings
 
 
 def get_drones_of_user(username):
@@ -15,8 +15,12 @@ def get_drones_of_user(username):
         for drone in drones_booked_by_user:
             origin_data = locations.objects.filter(id=drone.origin_id)
             origin = (origin_data[0]).location
+            origin_city_data = (cities.objects.filter(id=(origin_data[0]).city_id))[0]
+            origin = origin + ", " + origin_city_data.city
             destination_data = locations.objects.filter(id=drone.destination_id)
             destination = (destination_data[0]).location
+            destination_city_data = (cities.objects.filter(id=(destination_data[0]).city_id))[0]
+            destination = destination + ", " + destination_city_data.city
             drone_data = [drone.id, origin, destination, drone.job_finish_time]
             drones_data.append(drone_data)
         return drones_data
@@ -32,8 +36,12 @@ def get_all_drone_data():
             if drone.job:
                 origin_data = locations.objects.filter(id=drone.origin_id)
                 origin = (origin_data[0]).location
+                origin_city_data = (cities.objects.filter(id=(origin_data[0]).city_id))[0]
+                origin = origin + ", " + origin_city_data.city
                 destination_data = locations.objects.filter(id=drone.destination_id)
                 destination = (destination_data[0]).location
+                destination_city_data = (cities.objects.filter(id=(destination_data[0]).city_id))[0]
+                destination = destination + ", " + destination_city_data.city
             else:
                 origin = None
                 destination = None
@@ -162,8 +170,12 @@ def get_future_bookings_of_user(username):
         for booking in future_bookings_of_user:
             origin_data = locations.objects.filter(id=booking.origin_id)
             origin = (origin_data[0]).location
+            origin_city_data = (cities.objects.filter(id=(origin_data[0]).city_id))[0]
+            origin = origin + ", " + origin_city_data.city
             destination_data = locations.objects.filter(id=booking.destination_id)
             destination = (destination_data[0]).location
+            destination_city_data = (cities.objects.filter(id=(destination_data[0]).city_id))[0]
+            destination = destination + ", " + destination_city_data.city
             drone = (drones.objects.filter(future_booking_id=booking.id))[0]
             booking_data = [drone.id, origin, destination, booking.job_start_time]
             bookings_data.append(booking_data)

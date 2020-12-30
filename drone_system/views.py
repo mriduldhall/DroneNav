@@ -23,6 +23,10 @@ def book(request):
     if request.method == "POST":
         form = BookForm(request.POST)
         if form.is_valid():
+            form.cleaned_data['origin'] = str(form.cleaned_data['origin'])
+            form.cleaned_data['origin'] = (form.cleaned_data['origin'].split(','))[0]
+            form.cleaned_data['destination'] = str(form.cleaned_data['destination'])
+            form.cleaned_data['destination'] = (form.cleaned_data['destination'].split(','))[0]
             if request.POST.get("Book"):
                 if form.cleaned_data['origin'] != form.cleaned_data['destination']:
                     drone = find_available_drone(form.cleaned_data['origin'])
@@ -66,6 +70,10 @@ def futurebook(request):
         print("I am in POST")
         form = FutureBook(request.POST)
         if form.is_valid():
+            form.cleaned_data['origin'] = str(form.cleaned_data['origin'])
+            form.cleaned_data['origin'] = (form.cleaned_data['origin'].split(','))[0]
+            form.cleaned_data['destination'] = str(form.cleaned_data['destination'])
+            form.cleaned_data['destination'] = (form.cleaned_data['destination'].split(','))[0]
             if form.cleaned_data['origin'] != form.cleaned_data['destination']:
                 time = form_time(form.cleaned_data['time'])
                 time_validation = True
