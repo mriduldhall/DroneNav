@@ -38,6 +38,20 @@ class drones(models.Model):
     future_booking = models.ForeignKey('future_bookings', models.SET_NULL, null=True)
 
 
+class bases(models.Model):
+    id = models.AutoField(primary_key=True)
+    location = models.ForeignKey('locations', models.PROTECT)
+    job = models.BooleanField()
+    user = models.ForeignKey('user_system.users', models.SET(0), null=True)
+    route = models.ForeignKey('routes', models.PROTECT, null=True)
+    job_start_time = models.DateTimeField(null=True)
+    job_duration = models.PositiveIntegerField(null=True)
+    job_finish_time = models.DateTimeField(null=True)
+    origin = models.ForeignKey('locations', models.PROTECT, null=True, related_name='id_destination')
+    destination = models.ForeignKey('locations', models.PROTECT, null=True, related_name='id_origin')
+    future_booking = models.ForeignKey('future_bookings', models.SET_NULL, null=True)
+
+
 class future_bookings(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey('user_system.users', models.SET(0))

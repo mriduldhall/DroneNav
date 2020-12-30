@@ -67,7 +67,6 @@ def futurebook(request):
     time_validation = ""
     booking = ""
     if request.method == "POST":
-        print("I am in POST")
         form = FutureBook(request.POST)
         if form.is_valid():
             form.cleaned_data['origin'] = str(form.cleaned_data['origin'])
@@ -92,7 +91,6 @@ def futurebook(request):
                     else:
                         booking = "None"
             else:
-                print("Origin and destination is same")
                 booking = "Same"
         else:
             time_validation = False
