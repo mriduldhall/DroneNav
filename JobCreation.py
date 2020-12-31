@@ -5,7 +5,7 @@ from random import randint
 import random
 
 from drone_system.drones import world_data, locations
-from drone_system.drones import find_available_drone, assign_booking, find_earliest_drone, create_future_booking
+from drone_system.drones import find_available_vehicle, assign_booking, find_earliest_drone, create_future_booking
 
 if __name__ == '__main__':
     while True:
@@ -23,7 +23,7 @@ if __name__ == '__main__':
             locations_list.remove(origin)
             destination = random.choice(locations_list)
             if origin != destination:
-                drone = find_available_drone(origin)
+                drone = find_available_vehicle(origin)
                 if drone:
                     print("Assigning Job to", drone)
                     assign_booking(drone, origin, destination, "Emulator")

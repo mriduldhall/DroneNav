@@ -2,7 +2,7 @@
 
 {% block book %}
     {% if book_status == "Booked" %}
-        <div class="alert alert-success" role="alert">Successfully booked drone</div>
+        <div class="alert alert-success" role="alert">Successfully booked</div>
     {% elif book_status == "Same" %}
         <div class="alert alert-danger" role="alert">Origin and Destination cannot be the same</div>
     {% elif book_status == "None" %}

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from .forms import BookForm, ChangePassword, DeleteAccount, FutureBook
 from .settings import validate_password, change_password, delete_account
-from .drones import get_drones_of_user, get_all_drone_data, find_available_drone, assign_booking, find_earliest_drone, create_future_booking, form_time, get_future_bookings_of_user
+from .drones import get_drones_of_user, get_all_drone_data, get_all_base_data, find_available_vehicle, assign_booking, find_earliest_drone, create_future_booking, form_time, get_future_bookings_of_user, same_city
 
 
 # Create your views here.
@@ -17,6 +17,16 @@ def dashboard(request):
     return render(request, '../../drone_system/templates/drone_system/dashboard.html', context)
 
 
+def information(request):
+    drones_data = get_all_drone_data()
+    bases_data = get_all_base_data()
+    context = {
+        "drones_data": drones_data,
+        "bases_data": bases_data,
+    }
+    return render(request, '../../drone_system/templates/drone_system/information.html', context)
+
+
 def book(request):
     book_status = ""
     time = ""
@@ -29,20 +39,31 @@ def book(request):
             form.cleaned_data['destination'] = (form.cleaned_data['destination'].split(','))[0]
             if request.POST.get("Book"):
                 if form.cleaned_data['origin'] != form.cleaned_data['destination']:
-                    drone = find_available_drone(form.cleaned_data['origin'])
-                    if drone:
-                        assign_booking(drone, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
-                        book_status = "Booked"
-                        form = BookForm()
-                    else:
-                        drone = find_earliest_drone(form.cleaned_data['origin'])
-                        if drone:
-                            time = drone.job_finish_time
-                            request.session['drone_id'] = drone.id
-                            book_status = "Later"
-                        else:
-                            book_status = "None"
+                    # drone = find_available_drone(form.cleaned_data['origin'])
+                    # if drone:
+                    #     assign_booking(drone, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'])
+                    #     book_status = "Booked"
+                    #     form = BookForm()
+                    # else:
+                    #     drone = find_earliest_drone(form.cleaned_data['origin'])
+                    #     if drone:
+                    #         time = drone.job_finish_time
+                    #         request.session['drone_id'] = drone.id
+                    #         book_status = "Later"
+                    #     else:
+                    #         book_status = "None"
+                    #         form = BookForm()
+
+                    if same_city(form.cleaned_data['origin'], form.cleaned_data['destination']):
+                        base = find_available_vehicle(form.cleaned_data['origin'], "Base")
+                        if base:
+                            assign_booking(base, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'], "Base")
+                            book_status = "Booked"
                             form = BookForm()
+                        else:
+                            print("Next available (WIP)")
+                    else:
+                        print("Mixed routes (WIP)")
                 else:
                     book_status = "Same"
             elif request.POST.get("Yes"):
@@ -76,7 +97,7 @@ def futurebook(request):
             if form.cleaned_data['origin'] != form.cleaned_data['destination']:
                 time = form_time(form.cleaned_data['time'])
                 time_validation = True
-                drone = find_available_drone(form.cleaned_data['origin'])
+                drone = find_available_vehicle(form.cleaned_data['origin'])
                 if drone:
                     create_future_booking(drone.id, form.cleaned_data['origin'], form.cleaned_data['destination'], request.session['username'], time)
                     booking = "Success"
@@ -102,14 +123,6 @@ def futurebook(request):
         "booking": booking,
     }
     return render(request, '../../drone_system/templates/drone_system/futurebook.html', context)
-
-
-def information(request):
-    drones_data = get_all_drone_data()
-    context = {
-        "drones_data": drones_data
-    }
-    return render(request, '../../drone_system/templates/drone_system/information.html', context)
 
 
 def help(request):

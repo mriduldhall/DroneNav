@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from random import randint
 
 from user_system.models import users
-from .models import drones, locations, cities, routes, world_data, future_bookings
+from .models import drones, bases, locations, cities, routes, world_data, future_bookings
 
 
 def get_drones_of_user(username):
@@ -50,20 +50,47 @@ def get_all_drone_data():
         return drones_data
     except drones.DoesNotExist:
         return drones_data
-    
 
-def find_available_drone(origin):
+
+def get_all_base_data():
+    bases_data = []
+    try:
+        all_bases = bases.objects.all().order_by('id')
+        for base in all_bases:
+            if base.job:
+                origin_data = locations.objects.filter(id=base.origin_id)
+                origin = (origin_data[0]).location
+                origin_city_data = (cities.objects.filter(id=(origin_data[0]).city_id))[0]
+                origin = origin + ", " + origin_city_data.city
+                destination_data = locations.objects.filter(id=base.destination_id)
+                destination = (destination_data[0]).location
+                destination_city_data = (cities.objects.filter(id=(destination_data[0]).city_id))[0]
+                destination = destination + ", " + destination_city_data.city
+            else:
+                origin = None
+                destination = None
+            base_data = [base.id, base.job, origin, destination, base.job_finish_time]
+            bases_data.append(base_data)
+        return bases_data
+    except bases.DoesNotExist:
+        return bases_data
+
+
+def find_available_vehicle(origin, transport):
     location_data = locations.objects.filter(location=origin)
     origin_id = (location_data[0]).id
-    available_drones = drones.objects.filter(location_id=origin_id, job=False, future_booking_id=None)
-    if not available_drones:
+    if transport == "Drone":
+        available_vehicles = drones.objects.filter(location_id=origin_id, job=False, future_booking_id=None)
+    else:
+        available_vehicles = bases.objects.filter(location_id=origin_id, job=False, future_booking_id=None)
+    if not available_vehicles:
         return None
     else:
-        drone = available_drones[0]
-        return drone
+        vehicle = available_vehicles[0]
+        return vehicle
 
 
-def assign_booking(drone, origin, destination, username):
+def assign_booking(vehicle, origin, destination, username, transport):
     user_data = users.objects.filter(username=username)
     user_id = user_data[0]
     origin_data = locations.objects.filter(location=origin)
@@ -76,26 +103,26 @@ def assign_booking(drone, origin, destination, username):
         route_data = routes.objects.filter(city_a_id=destination_id, city_b_id=origin_id)
     route_id = (route_data[0]).id
     job_start_time = datetime.now(tz=timezone.utc)
-    job_duration = _calculate_job_duration((route_data[0]).distance)
+    job_duration = _calculate_job_duration((route_data[0]).distance, transport)
     job_finish_time = job_start_time + timedelta(minutes=job_duration)
-    assert origin_id == drone.location_id
-    _save_data(drone, user_id, route_id, job_start_time, job_duration, job_finish_time, origin_id, destination_id)
+    assert origin_id == vehicle.location_id
+    _save_data(vehicle, user_id, route_id, job_start_time, job_duration, job_finish_time, origin_id, destination_id)
 
 
-def _calculate_job_duration(distance):
-    traffic_probability = world_data.objects.filter(items="Traffic probability")
+def _calculate_job_duration(distance, transport):
+    traffic_probability = world_data.objects.filter(items=transport + " traffic probability")
     traffic_probability = (traffic_probability[0]).data
     current_traffic = 100 - (randint(1, 100))
     if traffic_probability <= current_traffic:
-        lowest_speed = world_data.objects.filter(items="Drone lowest traffic speed")
+        lowest_speed = world_data.objects.filter(items=transport + " lowest traffic speed")
         lowest_speed = (lowest_speed[0]).data
-        highest_speed = world_data.objects.filter(items="Drone highest traffic speed")
+        highest_speed = world_data.objects.filter(items=transport + " highest traffic speed")
         highest_speed = (highest_speed[0]).data
         speed = randint(lowest_speed, highest_speed)
     else:
-        lowest_speed = world_data.objects.filter(items="Drone lowest speed")
+        lowest_speed = world_data.objects.filter(items=transport + "lowest speed")
         lowest_speed = (lowest_speed[0]).data
-        highest_speed = world_data.objects.filter(items="Drone highest speed")
+        highest_speed = world_data.objects.filter(items=transport + "highest speed")
         highest_speed = (highest_speed[0]).data
         speed = randint(lowest_speed, highest_speed)
     job_duration = distance/speed
@@ -105,16 +132,16 @@ def _calculate_job_duration(distance):
     return int(job_duration * 60)
 
 
-def _save_data(drone, user_id, route_id, job_start_time, job_duration, job_finish_time, origin_id, destination_id):
-    drone.job = True
-    drone.user_id = user_id
-    drone.route_id = route_id
-    drone.job_start_time = job_start_time
-    drone.job_duration = job_duration
-    drone.job_finish_time = job_finish_time
-    drone.origin_id = origin_id
-    drone.destination_id = destination_id
-    drone.save()
+def _save_data(vehicle, user_id, route_id, job_start_time, job_duration, job_finish_time, origin_id, destination_id):
+    vehicle.job = True
+    vehicle.user_id = user_id
+    vehicle.route_id = route_id
+    vehicle.job_start_time = job_start_time
+    vehicle.job_duration = job_duration
+    vehicle.job_finish_time = job_finish_time
+    vehicle.origin_id = origin_id
+    vehicle.destination_id = destination_id
+    vehicle.save()
 
 
 def find_earliest_drone(origin):
@@ -182,3 +209,14 @@ def get_future_bookings_of_user(username):
         return bookings_data
     except drones.DoesNotExist:
         return bookings_data
+
+
+def same_city(origin, destination):
+    origin_data = (locations.objects.filter(location=origin))[0]
+    origin_city_data = (cities.objects.filter(id=origin_data.city_id))[0]
+    destination_data = (locations.objects.filter(location=destination))[0]
+    destination_city_data = (cities.objects.filter(id=destination_data.city_id))[0]
+    if origin_city_data.city == destination_city_data.city:
+        return True
+    else:
+        return False
