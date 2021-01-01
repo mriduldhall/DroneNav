@@ -5,7 +5,7 @@ from random import randint
 import random
 
 from drone_system.drones import world_data, locations
-from drone_system.drones import find_available_vehicle, assign_booking, find_earliest_drone, create_future_booking
+from drone_system.drones import find_available_vehicle, assign_booking, find_earliest_vehicle, create_future_booking
 
 if __name__ == '__main__':
     while True:
@@ -28,7 +28,7 @@ if __name__ == '__main__':
                     print("Assigning Job to", drone)
                     assign_booking(drone, origin, destination, "Emulator")
                 else:
-                    drone = find_earliest_drone(origin)
+                    drone = find_earliest_vehicle(origin)
                     if drone:
                         future_booking_probability = world_data.objects.filter(items="Future booking probability")
                         future_booking_probability = (future_booking_probability[0]).data
