@@ -1,14 +1,14 @@
 {% extends 'drone_system/bookbase.html' %}
 
 {% block book %}
-    {% if booking == "Success" %}
-        <div class="alert alert-success" role="alert">Successfully booked drone</div>
+    {% if book_status == "Booked" %}
+        <div class="alert alert-success" role="alert">Successfully booked journey</div>
     {% elif time_validation == False %}
         <div class="alert alert-danger" role="alert">Time is not valid. Please enter time in the HH:MM format in 24-hour notation.</div>
-    {% elif booking == "Same" %}
+    {% elif book_status == "Same" %}
         <div class="alert alert-danger" role="alert">Origin and Destination cannot be the same</div>
-    {% elif booking == "None" %}
-        <div class="alert alert-danger" role="alert">No drone available. Please try again later or choose another time.</div>
+    {% elif book_status == "None" %}
+        <div class="alert alert-danger" role="alert">A vehicle is not available. Please try again later or choose another time.</div>
     {% endif %}
 
     <nav class="mx-auto card w-25" style=text-align:center;border:none;padding-top:6%>

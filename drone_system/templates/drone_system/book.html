@@ -2,14 +2,28 @@
 
 {% block book %}
     {% if book_status == "Booked" %}
-        <div class="alert alert-success" role="alert">Successfully booked</div>
+        <div class="alert alert-success" role="alert">Successfully booked journey</div>
     {% elif book_status == "Same" %}
         <div class="alert alert-danger" role="alert">Origin and Destination cannot be the same</div>
     {% elif book_status == "None" %}
-        <div class="alert alert-danger" role="alert">No drone available currently. Please try again later.</div>
+        <div class="alert alert-danger" role="alert">No vehicle available currently. Please try again later.</div>
     {% elif book_status == "Later" %}
-        <div class="alert alert-warning" role="alert">No drone available currently. However, we have a drone scheduled to arrive at {{ time }}
-            Would you like to book that drone?
+        <div class="alert alert-warning" role="alert">A vehicle might not be available in time which might require you to
+            wait. The route we formed for your journey:
+            <br>
+            {% if vehicles_types.0 %}
+                {{ vehicles_types.0 }} from {{ locations.0 }} to {{ locations.1 }}, leaving at {{ start_times.0 }} and arriving at {{ end_times.0 }}
+                <br>
+            {% endif %}
+            {% if vehicles_types.1 %}
+                {{ vehicles_types.1 }} from {{ locations.1 }} to {{ locations.2 }}, leaving at {{ start_times.1 }} and arriving at {{ end_times.1 }}
+                <br>
+            {% endif %}
+            {% if vehicles_types.2 %}
+                {{ vehicles_types.2 }} from {{ locations.2 }} to {{ locations.3 }}, leaving at {{ start_times.2 }} and arriving at {{ end_times.2 }}
+                <br>
+            {% endif %}
+            Would you like to book this?
             <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
                 <button type="submit" name="Yes" value="No" form="Book-form" class="btn btn-warning btn-lg">Yes</button>
                 <button type="submit" name="No" value="No" form="Book-form" class="btn btn-warning btn-lg">No</button>

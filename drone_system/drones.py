@@ -147,7 +147,7 @@ def assign_booking(vehicle, origin, destination, username, transport):
     return job_finish_time
 
 
-def create_future_booking(vehicle, origin, destination, username, job_start_time="", transport=""):
+def create_future_booking(vehicle, origin, destination, username, job_start_time="", job_duration="", job_finish_time="", transport=""):
     user_data = users.objects.filter(username=username)
     user_id = (user_data[0]).id
     origin_data = locations.objects.filter(location=origin)
@@ -161,8 +161,10 @@ def create_future_booking(vehicle, origin, destination, username, job_start_time
     route_id = (route_data[0]).id
     if job_start_time == "":
         job_start_time = vehicle.job_finish_time
-    job_duration = _calculate_job_duration((route_data[0]).distance, transport)
-    job_finish_time = job_start_time + timedelta(minutes=job_duration)
+    if job_duration == "":
+        job_duration = _calculate_job_duration((route_data[0]).distance, transport)
+    if job_finish_time == "":
+        job_finish_time = job_start_time + timedelta(minutes=job_duration)
     future_booking = future_bookings(user_id=user_id, route_id=route_id, job_start_time=job_start_time, job_duration=job_duration, job_finish_time=job_finish_time, origin_id=origin_id, destination_id=destination_id)
     future_booking.save()
     future_booking_id = future_booking.pk
@@ -240,3 +242,186 @@ def find_intercity_location(location):
     location_data = (locations.objects.filter(location=location))[0]
     intracity_location = (locations.objects.filter(city_id=location_data.city_id, intercity=True))[0]
     return intracity_location.location
+
+
+def index_in_list(list, index):
+    return index < len(list)
+
+
+def plan_route(origin, destination):
+    book_status = ""
+    vehicles = []
+    vehicles_types = []
+    route_locations = []
+    if not same_city(origin, destination):
+        origin_intercity_location = find_intercity_location(origin)
+        destination_intercity_location = find_intercity_location(destination)
+        if origin_intercity_location != origin:
+            base = find_available_vehicle(origin, "Base")
+            if not base:
+                base = find_earliest_vehicle(origin, "Base")
+                book_status = "Later"
+            vehicles.append(base)
+            route_locations.append(origin)
+        drone = find_available_vehicle(origin_intercity_location, "Drone")
+        if not drone:
+            drone = find_earliest_vehicle(origin_intercity_location, "Drone")
+            book_status = "Later"
+        vehicles.append(drone)
+        route_locations.append(origin_intercity_location)
+        if destination_intercity_location != destination:
+            base = find_available_vehicle(destination, "Base")
+            if not base:
+                base = find_earliest_vehicle(destination, "Base")
+                book_status = "Later"
+            vehicles.append(base)
+            route_locations.append(destination_intercity_location)
+    else:
+        base = find_available_vehicle(origin, "Base")
+        if not base:
+            find_earliest_vehicle(origin, "Base")
+            book_status = "Later"
+        vehicles.append(base)
+        route_locations.append(origin)
+    route_locations.append(destination)
+    for vehicle in vehicles:
+        if isinstance(vehicle, drones):
+            vehicles_types.append("Drone")
+        else:
+            vehicles_types.append("Base")
+    return vehicles, vehicles_types, route_locations, book_status
+
+
+def plan_time(vehicles, route_locations):
+    route_locations_id = []
+    start_times = []
+    durations = []
+    end_times = []
+    for location in route_locations:
+        route_locations_id.append((locations.objects.filter(location=location))[0].id)
+    for counter in range(len(vehicles)):
+        if vehicles[counter].job:
+            if counter == 0:
+                start_time = vehicles[counter].job_finish_time
+            elif vehicles[counter].job_finish_time > end_times[counter-1]:
+                start_time = vehicles[counter].job_finish_time
+            else:
+                start_time = end_times[counter - 1]
+        else:
+            if counter == 0:
+                start_time = datetime.now(tz=timezone.utc)
+            else:
+                start_time = end_times[counter-1]
+        if route_locations_id[counter] < route_locations_id[counter+1]:
+            distance = (routes.objects.filter(city_a_id=route_locations_id[counter], city_b_id=route_locations_id[counter+1]))[0].distance
+        else:
+            distance = (routes.objects.filter(city_a_id=route_locations_id[counter+1], city_b_id=route_locations_id[counter]))[0].distance
+        if isinstance(vehicles[counter], drones):
+            transport = "Drone"
+        else:
+            transport = "Base"
+        job_duration = _calculate_job_duration(distance, transport)
+        end_time = start_time + timedelta(minutes=job_duration)
+        start_times.append(start_time)
+        durations.append(job_duration)
+        end_times.append(end_time)
+    return start_times, durations, end_times
+
+
+def plan_future_time(vehicles, route_locations, start_time):
+    route_locations_id = []
+    start_times = []
+    durations = []
+    end_times = []
+    for location in route_locations:
+        route_locations_id.append((locations.objects.filter(location=location))[0].id)
+    for counter in range(len(vehicles)):
+        if vehicles[counter].job:
+            if counter == 0:
+                if vehicles[counter].job_finish_time > start_time:
+                    start_time = None
+                    start_times.append(start_time)
+                    break
+            elif vehicles[counter].job_finish_time > end_times[counter - 1]:
+                start_time = None
+                start_times.append(start_time)
+                break
+            else:
+                start_time = end_times[counter-1]
+        else:
+            if counter == 0:
+                pass
+            else:
+                start_time = end_times[counter-1]
+        if route_locations_id[counter] < route_locations_id[counter + 1]:
+            distance = (routes.objects.filter(city_a_id=route_locations_id[counter], city_b_id=route_locations_id[counter + 1]))[0].distance
+        else:
+            distance = (routes.objects.filter(city_a_id=route_locations_id[counter + 1], city_b_id=route_locations_id[counter]))[0].distance
+        if isinstance(vehicles[counter], drones):
+            transport = "Drone"
+        else:
+            transport = "Base"
+        job_duration = _calculate_job_duration(distance, transport)
+        end_time = start_time + timedelta(minutes=job_duration)
+        start_times.append(start_time)
+        durations.append(job_duration)
+        end_times.append(end_time)
+    return start_times, durations, end_times
+
+
+def book_journey(vehicles, vehicles_types, route_locations, start_times, durations, end_times, username, future=False):
+    if not future:
+        if vehicles[0].job:
+            create_future_booking(vehicles[0], route_locations[0], route_locations[1], username, "", "", "", vehicles_types[0])
+        else:
+            assign_booking(vehicles[0], route_locations[0], route_locations[1], username, vehicles_types[0])
+    else:
+        create_future_booking(vehicles[0], route_locations[0], route_locations[1], username, start_times[0], durations[0], end_times[0], vehicles_types[0])
+    del vehicles[0], route_locations[0], vehicles_types[0], start_times[0], durations[0], end_times[0]
+    for counter in range(len(vehicles)):
+        create_future_booking(vehicles[counter], route_locations[counter], route_locations[counter+1], username, start_times[counter], durations[counter], end_times[counter], vehicles_types[counter])
+
+
+def convert_vehicles_to_ids(vehicles):
+    vehicles_ids = []
+    for vehicle in vehicles:
+        vehicles_ids.append(vehicle.id)
+    return vehicles_ids
+
+
+def convert_vehicle_ids_to_vehicles(vehicles_ids, vehicle_types):
+    vehicles = []
+    for counter in range(len(vehicles_ids)):
+        if vehicle_types[counter] == "Drone":
+            vehicles.append(drones.objects.filter(id=vehicles_ids[counter])[0])
+        else:
+            vehicles.append(bases.objects.filter(id=vehicles_ids[counter])[0])
+    return vehicles
+
+
+def convert_locations_to_ids(route_locations):
+    route_locations_ids = []
+    for location in route_locations:
+        route_locations_ids.append((locations.objects.filter(location=location))[0].id)
+    return route_locations_ids
+
+
+def convert_locations_ids_to_locations(route_locations_ids):
+    route_locations = []
+    for id in route_locations_ids:
+        route_locations.append(locations.objects.filter(id=id)[0].location)
+    return route_locations
+
+
+def serialize_datetime(raw_time_list):
+    time_list = []
+    for time in raw_time_list:
+        time_list.append(str(time))
+    return time_list
+
+
+def deserialize_datetime(raw_time_list):
+    time_list = []
+    for time in raw_time_list:
+        time_list.append(datetime.strptime(time, '%Y-%m-%d %H:%M:%S.%f%z'))
+    return time_list
