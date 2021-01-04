@@ -18,6 +18,7 @@ def complete_jobs():
         for vehicle in vehicles_list:
             job_finish_time = vehicle.job_finish_time
             if datetime.now(tz=timezone.utc) >= job_finish_time:
+                print("Completing job for", vehicle)
                 vehicle.location_id = vehicle.destination_id
                 vehicle.job = False
                 vehicle.user_id = None
@@ -39,6 +40,7 @@ def assign_future_jobs():
             future_booking = future_bookings.objects.filter(id=vehicle.future_booking_id)
             future_booking = future_booking[0]
             if datetime.now(tz=timezone.utc) >= future_booking.job_start_time:
+                print("Starting future job for", vehicle)
                 vehicle.job = True
                 vehicle.user_id = future_booking.user_id
                 vehicle.route_id = future_booking.route_id
