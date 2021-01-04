@@ -1,0 +1,30 @@
+{% extends 'drone_system/base.html' %}
+
+{% block content %}
+    <nav class="container-fluid" style="background-image:url('../../static/drone_system/Dashboard Background.png');background-repeat:no-repeat;color:floralwhite;background-size:cover;height:100%;min-height:91.35vh">
+        <nav style="padding-top: 15px">
+            <nav class="table-responsive">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">City</th>
+                            <th scope="col">Intercity Travel</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for location in locations_data %}
+                            <tr>
+                                <th scope="row" style="color: white">{{ forloop.counter }}</th>
+                                <td style="color: white">{{ location.0 }}</td>
+                                <td style="color: white">{{ location.1 }}</td>
+                                <td style="color: white">{{ location.2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </nav>
+        </nav>
+    </nav>
+{% endblock %}

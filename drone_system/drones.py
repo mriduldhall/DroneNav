@@ -443,3 +443,13 @@ def deserialize_datetime(raw_time_list):
     for time in raw_time_list:
         time_list.append(datetime.strptime(time, '%Y-%m-%d %H:%M:%S.%f%z'))
     return time_list
+
+
+def get_locations_data():
+    locations_data = []
+    all_locations = (locations.objects.all()).order_by('id')
+    for location in all_locations:
+        city_data = (cities.objects.filter(id=location.city_id))[0]
+        location_data = [location.location, city_data.city, location.intercity]
+        locations_data.append(location_data)
+    return locations_data
