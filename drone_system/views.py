@@ -2,16 +2,16 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from .forms import BookForm, ChangePassword, DeleteAccount, FutureBook
 from .settings import validate_password, change_password, delete_account
-from .drones import get_drones_of_user, get_all_drone_data, get_all_base_data, form_time, get_future_bookings_of_user, plan_route, plan_time, plan_future_time, book_journey, convert_vehicles_to_ids, convert_vehicle_ids_to_vehicles, convert_locations_to_ids, convert_locations_ids_to_locations, serialize_datetime, deserialize_datetime
+from .drones import get_vehicles_of_user, get_all_drone_data, get_all_base_data, form_time, get_future_bookings_of_user, plan_route, plan_time, plan_future_time, book_journey, convert_vehicles_to_ids, convert_vehicle_ids_to_vehicles, convert_locations_to_ids, convert_locations_ids_to_locations, serialize_datetime, deserialize_datetime
 
 
 # Create your views here.
 def dashboard(request):
-    drones_data = get_drones_of_user(request.session['username'])
+    vehicles_data = get_vehicles_of_user(request.session['username'])
     future_booking_data = get_future_bookings_of_user(request.session['username'])
     context = {
         "username": request.session['username'],
-        "drones_data": drones_data,
+        "vehicles_data": vehicles_data,
         "future_booking_data": future_booking_data
     }
     return render(request, '../../drone_system/templates/drone_system/dashboard.html', context)

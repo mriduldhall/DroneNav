@@ -10,20 +10,22 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Drone no.</th>
+                        <th scope="col">Module Type</th>
+                        <th scope="col">Vehicle no.</th>
                         <th scope="col">Origin</th>
                         <th scope="col">Destination</th>
                         <th scope="col">Expected Arrival</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for drone in drones_data %}
+                    {% for vehicle in vehicles_data %}
                         <tr>
                             <th scope="row" style="color: white">{{ forloop.counter }}</th>
-                            <td style="color: white">{{ drone.0 }}</td>
-                            <td style="color: white">{{ drone.1 }}</td>
-                            <td style="color: white">{{ drone.2 }}</td>
-                            <td style="color: white">{{ drone.3 }}</td>
+                            <td style="color: white">{{ vehicle.0 }}</td>
+                            <td style="color: white">{{ vehicle.1 }}</td>
+                            <td style="color: white">{{ vehicle.2 }}</td>
+                            <td style="color: white">{{ vehicle.3 }}</td>
+                            <td style="color: white">{{ vehicle.4 }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -35,7 +37,8 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Drone no.</th>
+                        <th scope="col">Module Type</th>
+                        <th scope="col">Vehicle no.</th>
                         <th scope="col">Origin</th>
                         <th scope="col">Destination</th>
                         <th scope="col">Expected Departure</th>
@@ -49,6 +52,7 @@
                             <td style="color: white">{{ booking.1 }}</td>
                             <td style="color: white">{{ booking.2 }}</td>
                             <td style="color: white">{{ booking.3 }}</td>
+                            <td style="color: white">{{ booking.4 }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

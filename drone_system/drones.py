@@ -1,31 +1,39 @@
 from django.utils import timezone
 from datetime import datetime, timedelta
 from random import randint
+from itertools import chain
 
 from user_system.models import users
 from .models import drones, bases, locations, cities, routes, world_data, future_bookings
 
 
-def get_drones_of_user(username):
-    drones_data = []
+def get_vehicles_of_user(username):
+    vehicles_data = []
     try:
         user = users.objects.filter(username=username)
         user_id = user[0]
         drones_booked_by_user = (drones.objects.filter(user_id=user_id)).order_by('id')
         for drone in drones_booked_by_user:
-            origin_data = locations.objects.filter(id=drone.origin_id)
+            drone.type = "Air"
+        bases_booked_by_user = (bases.objects.filter(user_id=user_id)).order_by('id')
+        for base in bases_booked_by_user:
+            base.type = "Ground"
+        vehicles_booked_by_user = sorted(chain(drones_booked_by_user, bases_booked_by_user), key=lambda instance: instance.id)
+        for vehicle in vehicles_booked_by_user:
+            origin_data = locations.objects.filter(id=vehicle.origin_id)
             origin = (origin_data[0]).location
             origin_city_data = (cities.objects.filter(id=(origin_data[0]).city_id))[0]
             origin = origin + ", " + origin_city_data.city
-            destination_data = locations.objects.filter(id=drone.destination_id)
+            destination_data = locations.objects.filter(id=vehicle.destination_id)
             destination = (destination_data[0]).location
             destination_city_data = (cities.objects.filter(id=(destination_data[0]).city_id))[0]
             destination = destination + ", " + destination_city_data.city
-            drone_data = [drone.id, origin, destination, drone.job_finish_time]
-            drones_data.append(drone_data)
-        return drones_data
-    except drones.DoesNotExist:
-        return drones_data
+            vehicle_data = [vehicle.type, vehicle.id, origin, destination, vehicle.job_finish_time]
+            vehicles_data.append(vehicle_data)
+        return vehicles_data
+    except drones.DoesNotExist or bases.DoesNotExist:
+        print("Dashboard error occurred")
+        return vehicles_data
 
 
 def get_future_bookings_of_user(username):
@@ -43,11 +51,18 @@ def get_future_bookings_of_user(username):
             destination = (destination_data[0]).location
             destination_city_data = (cities.objects.filter(id=(destination_data[0]).city_id))[0]
             destination = destination + ", " + destination_city_data.city
-            drone = (drones.objects.filter(future_booking_id=booking.id))[0]
-            booking_data = [drone.id, origin, destination, booking.job_start_time]
+            vehicle = drones.objects.filter(future_booking_id=booking.id)
+            if not vehicle:
+                vehicle = bases.objects.filter(future_booking_id=booking.id)
+                vehicle = vehicle[0]
+                vehicle.type = "Ground"
+            else:
+                vehicle = vehicle[0]
+                vehicle.type = "Air"
+            booking_data = [vehicle.type, vehicle.id, origin, destination, booking.job_start_time]
             bookings_data.append(booking_data)
         return bookings_data
-    except drones.DoesNotExist:
+    except drones.DoesNotExist or bases.DoesNotExist:
         return bookings_data
 
 
@@ -127,7 +142,7 @@ def find_earliest_vehicle(origin, transport):
         return earliest_vehicle
 
 
-def assign_booking(vehicle, origin, destination, username, transport):
+def assign_booking(vehicle, origin, destination, username, transport, job_start_time="", job_duration="", job_finish_time=""):
     user_data = users.objects.filter(username=username)
     user_id = user_data[0]
     origin_data = locations.objects.filter(location=origin)
@@ -139,15 +154,18 @@ def assign_booking(vehicle, origin, destination, username, transport):
     else:
         route_data = routes.objects.filter(city_a_id=destination_id, city_b_id=origin_id)
     route_id = (route_data[0]).id
-    job_start_time = datetime.now(tz=timezone.utc)
-    job_duration = _calculate_job_duration((route_data[0]).distance, transport)
-    job_finish_time = job_start_time + timedelta(minutes=job_duration)
+    if job_start_time == "":
+        job_start_time = datetime.now(tz=timezone.utc)
+    if job_duration == "":
+        job_duration = _calculate_job_duration((route_data[0]).distance, transport)
+    if job_finish_time == "":
+        job_finish_time = job_start_time + timedelta(minutes=job_duration)
     assert origin_id == vehicle.location_id
     _save_data(vehicle, user_id, route_id, job_start_time, job_duration, job_finish_time, origin_id, destination_id)
     return job_finish_time
 
 
-def create_future_booking(vehicle, origin, destination, username, job_start_time="", job_duration="", job_finish_time="", transport=""):
+def create_future_booking(vehicle, origin, destination, username, transport="", job_start_time="", job_duration="", job_finish_time=""):
     user_data = users.objects.filter(username=username)
     user_id = (user_data[0]).id
     origin_data = locations.objects.filter(location=origin)
@@ -372,14 +390,14 @@ def plan_future_time(vehicles, route_locations, start_time):
 def book_journey(vehicles, vehicles_types, route_locations, start_times, durations, end_times, username, future=False):
     if not future:
         if vehicles[0].job:
-            create_future_booking(vehicles[0], route_locations[0], route_locations[1], username, "", "", "", vehicles_types[0])
+            create_future_booking(vehicles[0], route_locations[0], route_locations[1], username, vehicles_types[0], start_times[0], durations[0], end_times[0])
         else:
-            assign_booking(vehicles[0], route_locations[0], route_locations[1], username, vehicles_types[0])
+            assign_booking(vehicles[0], route_locations[0], route_locations[1], username, vehicles_types[0], start_times[0], durations[0], end_times[0])
     else:
-        create_future_booking(vehicles[0], route_locations[0], route_locations[1], username, start_times[0], durations[0], end_times[0], vehicles_types[0])
+        create_future_booking(vehicles[0], route_locations[0], route_locations[1], username, vehicles_types[0], start_times[0], durations[0], end_times[0])
     del vehicles[0], route_locations[0], vehicles_types[0], start_times[0], durations[0], end_times[0]
     for counter in range(len(vehicles)):
-        create_future_booking(vehicles[counter], route_locations[counter], route_locations[counter+1], username, start_times[counter], durations[counter], end_times[counter], vehicles_types[counter])
+        create_future_booking(vehicles[counter], route_locations[counter], route_locations[counter+1], username, vehicles_types[counter], start_times[counter], durations[counter], end_times[counter])
 
 
 def convert_vehicles_to_ids(vehicles):
