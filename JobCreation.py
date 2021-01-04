@@ -4,13 +4,13 @@ import time
 from random import randint
 import random
 
-from drone_system.drones import world_data, locations
+from drone_system.models import drones, world_data, locations
 from drone_system.drones import plan_route, plan_time, book_journey
-from drone_system.models import drones
 
 if __name__ == '__main__':
     while True:
-        if len((drones.objects.filter(job=False, future_booking_id=None))) <= 10:
+        minimum_drones = (world_data.objects.filter(items="Minimum drones"))[0].data
+        if len((drones.objects.filter(job=False, future_booking_id=None))) <= minimum_drones:
             lowest_jobs = world_data.objects.filter(items="Jobs minimum")
             lowest_jobs = (lowest_jobs[0]).data
             highest_jobs = world_data.objects.filter(items="Jobs maximum")
