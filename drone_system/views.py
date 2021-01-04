@@ -74,10 +74,10 @@ def book(request):
                     book_status = "Same"
             elif request.POST.get("Yes"):
                 vehicles = convert_vehicle_ids_to_vehicles(request.session['vehicles_ids'], request.session['vehicles_types'])
-                locations = convert_locations_ids_to_locations(request.session['route_locations_ids'])
+                route_locations = convert_locations_ids_to_locations(request.session['route_locations_ids'])
                 start_times = deserialize_datetime(request.session['start_times'])
                 end_times = deserialize_datetime(request.session['end_times'])
-                book_journey(vehicles, request.session['vehicles_types'], locations, start_times, request.session['durations'], end_times, request.session['username'])
+                book_journey(vehicles, request.session['vehicles_types'], route_locations, start_times, request.session['durations'], end_times, request.session['username'])
                 book_status = "Booked"
                 form = BookForm()
                 del request.session['vehicles_ids']
@@ -101,7 +101,7 @@ def book(request):
         "book_status": book_status,
         "vehicles": vehicles,
         "vehicles_types": vehicles_types,
-        "locations": route_locations,
+        "route_locations": route_locations,
         "start_times": start_times,
         "end_times": end_times,
     }

@@ -61,8 +61,10 @@ def get_future_bookings_of_user(username):
                 vehicle.type = "Air"
             booking_data = [vehicle.type, vehicle.id, origin, destination, booking.job_start_time]
             bookings_data.append(booking_data)
+        bookings_data = sorted(bookings_data, key=lambda instance: instance[1])
         return bookings_data
     except drones.DoesNotExist or bases.DoesNotExist:
+        print("Dashboard error occurred")
         return bookings_data
 
 

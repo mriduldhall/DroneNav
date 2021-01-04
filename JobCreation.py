@@ -5,35 +5,43 @@ from random import randint
 import random
 
 from drone_system.drones import world_data, locations
-from drone_system.drones import find_available_vehicle, assign_booking, find_earliest_vehicle, create_future_booking
+from drone_system.drones import plan_route, plan_time, book_journey
+from drone_system.models import drones
 
 if __name__ == '__main__':
     while True:
-        lowest_jobs = world_data.objects.filter(items="Drone jobs minimum")
-        lowest_jobs = (lowest_jobs[0]).data
-        highest_jobs = world_data.objects.filter(items="Drone jobs maximum")
-        highest_jobs = (highest_jobs[0]).data
-        jobs = randint(lowest_jobs, highest_jobs)
-        locations_list = []
-        for _ in range(jobs):
-            locations_data = locations.objects.all()
-            for location in locations_data:
-                locations_list.append(location.location)
-            origin = random.choice(locations_list)
-            locations_list.remove(origin)
-            destination = random.choice(locations_list)
-            if origin != destination:
-                drone = find_available_vehicle(origin)
-                if drone:
-                    print("Assigning Job to", drone)
-                    assign_booking(drone, origin, destination, "Emulator")
-                else:
-                    drone = find_earliest_vehicle(origin)
-                    if drone:
+        if len((drones.objects.filter(job=False, future_booking_id=None))) <= 10:
+            lowest_jobs = world_data.objects.filter(items="Jobs minimum")
+            lowest_jobs = (lowest_jobs[0]).data
+            highest_jobs = world_data.objects.filter(items="Jobs maximum")
+            highest_jobs = (highest_jobs[0]).data
+            jobs = randint(lowest_jobs, highest_jobs)
+            for _ in range(jobs):
+                locations_list = []
+                locations_data = locations.objects.all()
+                for location in locations_data:
+                    locations_list.append(location.location)
+                origin = random.choice(locations_list)
+                locations_list.remove(origin)
+                destination = random.choice(locations_list)
+                assert origin != destination
+                vehicles, vehicles_types, route_locations, book_status = plan_route(origin, destination)
+                if None not in vehicles:
+                    start_times, durations, end_times = plan_time(vehicles, route_locations)
+                    if book_status == "":
+                        print("--Job start--")
+                        for vehicle in vehicles:
+                            print("Assigning job to", vehicle)
+                        book_journey(vehicles, vehicles_types, route_locations, start_times, durations, end_times, "Emulator")
+                        print("--Job end--")
+                    else:
                         future_booking_probability = world_data.objects.filter(items="Future booking probability")
                         future_booking_probability = (future_booking_probability[0]).data
                         future_booking_decision = randint(1, 100)
                         if future_booking_decision < future_booking_probability:
-                            print("Assigning Future Job to", drone)
-                            create_future_booking(drone.id, origin, destination, "Emulator")
+                            print("--Job start--")
+                            for vehicle in vehicles:
+                                print("Assigning future job to", vehicle)
+                            book_journey(vehicles, vehicles_types, route_locations, start_times, durations, end_times, "Emulator")
+                            print("--Job end--")
         time.sleep(360)
